@@ -278,6 +278,9 @@ AVPacket* PeekPacket(const PacketQueue* queue);			// Returns a pointer to the fi
 
 void AVPrintError(int errCode);							 // Prints a libav error code as a string.
 
+// Tries to initialize the stream PTS values .
+bool AVInitializePts(MediaStream* media);
+
 // Grabs a packet of the specified type (STREAM_VIDEO, STREAM_AUDIO).
 // First, searches the pending packets queue; if empty, it grabs and enqueues packets
 // until finding one of the desired type.
@@ -1001,23 +1004,20 @@ MediaStream LoadMediaFromContext(MediaContext *ctx, int flags)
 		}
 	}
 
-	if (isLoaded)
-	{
-		if ((flags & MEDIA_FLAG_LOOP) != 0)
-		{
-			ret.ctx->loopPlay = true;
-		}
-		if ((flags & MEDIA_FLAG_NO_AUTOPLAY) == 0)
-		{
-			SetMediaState(ret, MEDIA_STATE_PLAYING);
-		}
-	}
-	else
-	{
+	if (!isLoaded) {
 		TraceLog(LOG_ERROR, "MEDIA: Failed to load the media");
 		UnloadMedia(&ret);
-		ret = (MediaStream){ 0 };
+		return (MediaStream) { 0 };
 	}
+
+	if (!AVInitializePts(&ret)) {
+		TraceLog(LOG_ERROR, "MEDIA: Failed to initialize PTS");
+		UnloadMedia(&ret);
+		return (MediaStream) { 0 };
+	}
+
+	if ((flags & MEDIA_FLAG_LOOP) != 0) ret.ctx->loopPlay = true;
+	if ((flags & MEDIA_FLAG_NO_AUTOPLAY) == 0) SetMediaState(ret, MEDIA_STATE_PLAYING);
 
 	return ret;
 }
@@ -1685,6 +1685,53 @@ AVPacket* PeekPacket(const PacketQueue* queue)
 //---------------------------------------------------------------------------------------------------
 // Functions Definition - AV management - FFmpeg(libav)
 //---------------------------------------------------------------------------------------------------
+
+bool AVInitializePts(MediaStream* media)
+{
+	assert(media && media->ctx);
+
+	MediaContext* ctx = media->ctx;
+
+	for (int i = 0; i < STREAM_COUNT; ++i)
+	{
+		StreamDataContext* streamCtx = &ctx->streams[i];
+		if (!streamCtx->codecCtx) continue;
+
+		if (streamCtx->startPts == AV_NOPTS_VALUE)
+		{
+
+			const int64_t st = ctx->formatContext->streams[streamCtx->streamIdx]->start_time;
+			if (st != AV_NOPTS_VALUE) {
+				streamCtx->startPts = st;
+				continue;
+			}
+
+			AVPacket* pkt = NULL;
+			const int ret = AVPeekPacket(ctx, i, &pkt);
+
+			if (ret == MEDIA_EOF) {
+				TraceLog(LOG_WARNING, "MEDIA: Stream %d has no packets, defaulting startPts=0", i);
+				streamCtx->startPts = 0;
+				continue;
+			}
+
+			if (ret != MEDIA_RET_SUCCEED || !pkt) {
+				TraceLog(LOG_WARNING, "MEDIA: Failed peeking packet from stream %d (err=%d)", i, ret);
+				return false;
+			}
+
+			int64_t ts = (pkt->pts != AV_NOPTS_VALUE) ? pkt->pts : pkt->dts;
+			if (ts == AV_NOPTS_VALUE) {
+				TraceLog(LOG_WARNING, "MEDIA: Stream %d packet has no valid PTS/DTS, defaulting startPts=0", i);
+				ts = 0;
+			}
+
+			streamCtx->startPts = ts;
+		}
+	}
+
+	return true;
+}
 
 int AVGrabPacket(MediaContext* ctx, int streamType, AVPacket* dst)
 {
