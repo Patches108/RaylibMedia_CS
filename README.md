@@ -1,179 +1,163 @@
-![Version](https://img.shields.io/badge/raylib--media-v0.3beta-informational) ![Version](https://img.shields.io/badge/raylib-v5.5-informational) ![License](https://img.shields.io/github/license/cloudofoz/raylib-media)
+# RaylibMedia for C#
 
-> **Note**: This library is in **beta**. Your feedback and support in enhancing its quality are greatly appreciated!
+RaylibMedia provides FFmpeg-backed video and audio playback for C# games built with Raylib-cs.
+It exposes an idiomatic, disposable C# API for loading media, updating decoded frames, controlling
+playback, seeking, looping, and reading from managed streams.
 
-## Introduction
+This project is currently a preview for Windows x64 and targets .NET 8 or newer.
 
-**raylib-media** is a clean and user-friendly *extension* for [raylib](https://www.raylib.com/) that adds seamless audio and video streaming support via the [FFmpeg](https://ffmpeg.org/about.html) **libav\*** libraries.
-It enables easy integration of multimedia content into raylib applications, providing direct access to video textures and audio streams, with support for seeking and looping.
+## How it works
 
-<p align="center">
-  <img src="res/rmedia_icon.svg" alt="raylib-media icon" width="270" height="270">
-  <img src="res/raylib_example_01.gif" alt="raylib-example">
-</p>
+RaylibMedia is a C# wrapper around the native raylib-media decoder. It is not a pure-managed media
+decoder:
 
-## Table of Contents
-
-- [Core Features](#core-features)
-- [Minimal Usage](#minimal-usage)
-- [C# / Raylib-cs](#c--raylib-cs)
-- [Code Examples](#code-examples)
-- [Dependencies](#dependencies)
-- [About FFmpeg](#about-ffmpeg)
-- [License](#license)
-- [What's New](#whats-new)
-- [Credits](#credits)
-
-## Core Features
-
-- Portable code: successfully tested on **Windows**, **Linux**, **MacOS**.
-- Simple yet effective, with customizable options
-- Direct access to video `Texture` and `AudioStream` for efficient media handling
-- Optimized memory usage: no direct allocations are made outside the `LoadMedia` function.
-- Synchronized audio and video playback
-- Supports media seeking and looping
-- Supports loading media from custom streams, enabling flexible input sources like archives, online streams, or encrypted resource packs
-- Compatible with formats supported by the codecs in the linked FFmpeg build
-
-## Minimal Usage
-
-These 3-4 lines of code show the minimal code needed to play a video with `raylib-media`:
-
-```c
-#include <raymedia.h>
-
-MediaStream media = LoadMedia("path/to/your_file.mp4"); // Load the media
-
-while (...) { // Begin your main loop
-    ...
-    UpdateMedia(&media); // Update the media stream according to frame time
-    ...
-    DrawTexture(media.videoTexture, 0, 0, WHITE); // Draw the video frame
-    ...
-}
-
-UnloadMedia(&media); // Unload media when done
+```text
+C# game
+  -> RaylibMedia.dll       managed public API
+  -> raymedia.dll          native decoder included by the NuGet package
+  -> raylib.dll            supplied by Raylib-cs
+  -> FFmpeg 7 DLLs         supplied by the game developer
 ```
----
 
-## C# / Raylib-cs
+Normal package users write only C#. They do not compile C code or run CMake. The native C source
+and CMake project are retained so maintainers can audit and rebuild `raymedia.dll` when Raylib or
+FFmpeg changes.
 
-An idiomatic .NET 8 wrapper is available in [`csharp/RaylibMedia`](csharp/RaylibMedia). It exposes
-Raylib-cs `Texture2D` and `AudioStream` values, playback controls, seeking, looping, global
-configuration, deterministic disposal, and direct loading from `System.IO.Stream`.
+## Requirements
 
-The preview NuGet package targets Windows x64 and includes the native `raymedia.dll`:
+- Windows x64 for the current preview.
+- .NET 8 or newer.
+- Raylib-cs 8.0.0, installed automatically as a package dependency.
+- These 64-bit FFmpeg 7 shared libraries beside the game executable:
+  - `avcodec-61.dll`
+  - `avformat-61.dll`
+  - `avutil-59.dll`
+  - `swresample-5.dll`
+  - `swscale-8.dll`
+
+The FFmpeg DLLs must come from the same build. `ffmpeg.exe` is a command-line application and does
+not replace these shared libraries. FFmpeg binaries are not redistributed by this project.
+
+## Installation
+
+After the first NuGet release is published:
 
 ```powershell
 dotnet add package RaylibMedia --prerelease
 ```
 
-FFmpeg itself is not redistributed in the package. See the [C# setup and integration
-guide](csharp/README.md) for the five required FFmpeg 7 runtime DLLs, native build instructions,
-and a complete Raylib-cs game loop. A runnable C# example and native-ABI smoke tests are included.
+To develop against this source checkout before publication, add a project reference:
 
----
+```xml
+<ItemGroup>
+  <ProjectReference Include="path\to\RaylibMedia_CS\csharp\RaylibMedia\RaylibMedia.csproj" />
+</ItemGroup>
+```
 
-## Code Examples
+## Minimal C# example
 
-**[`1) example_01_basics.c`](https://github.com/cloudofoz/raylib-media/blob/main/examples/media/example_01_basics.c)**  
-> *Description:* Demonstrates how to play a video on the screen and loop it continuously.
-   <p align="center">
-    <img src="res/rmedia_example_01.jpg" alt="rmedia_example_01.jpg" width="380">
-   </p>
-   
-**[`2) example_02_media_player.c`](https://github.com/cloudofoz/raylib-media/blob/main/examples/media/example_02_media_player.c)**  
-> *Description:* A simple media player illustrating how to control playback speed, seek, pause, loop, adjust audio volume, and apply real-time shader effects to the video.
-   <p align="center">
-    <img src="res/rmedia_example_02.jpg" alt="rmedia_example_02.jpg" width="380" height="222">
-    <img src="res/rmedia_example_02.gif" alt="rmedia_example_02.gif" width="380" height="222">
-   </p>
+```csharp
+using Raylib_cs;
+using RaylibMedia;
 
-**[`3) example_03_multi_stream.c`](https://github.com/cloudofoz/raylib-media/blob/main/examples/media/example_03_multi_stream.c)**
-> *Description:* A 3D demo scene demonstrating multiple video streams with synchronized audio that dynamically adjusts based on cursor proximity.
-   <p align="center">
-    <img src="res/rmedia_example_03.jpg" alt="rmedia_example_03.jpg" width="380" height="222">
-    <img src="res/rmedia_example_03.gif" alt="rmedia_example_03.gif" width="380" height="222">
-   </p>
+Raylib.InitWindow(960, 540, "RaylibMedia");
+Raylib.InitAudioDevice();
 
-**[`4) example_04_custom_stream.c`](https://github.com/cloudofoz/raylib-media/blob/main/examples/media/example_04_custom_stream.c)**  
-> *Description:* Demonstrates how to use `LoadMediaFromStream` with custom callbacks for reading media.  
-> This example simulates a custom stream using a memory buffer, showcasing the flexibility of the API. Real-world use cases include:
-> - Reading from compressed archives  
-> - Streaming over a network  
-> - Accessing custom data formats or encrypted resources  
+try
+{
+    using MediaStream video = MediaStream.Load("intro.mp4", MediaLoadFlags.Loop);
 
----
+    while (!Raylib.WindowShouldClose())
+    {
+        video.Update();
 
-## Dependencies
+        Raylib.BeginDrawing();
+        Raylib.ClearBackground(Color.Black);
+        Raylib.DrawTexture(video.VideoTexture, 0, 0, Color.White);
+        Raylib.EndDrawing();
+    }
+}
+finally
+{
+    Raylib.CloseAudioDevice();
+    Raylib.CloseWindow();
+}
+```
 
-`raylib-media` depends on the following files and libraries:
-> *E.g. with GCC*: `gcc ... rmedia.c -lraylib -lavcodec -lavformat -lavutil -lswresample -lswscale`
+Initialize the Raylib window before loading video and the audio device before loading audio. Call
+`Update()` once per game frame on the Raylib thread. Dispose every `MediaStream` before closing the
+audio device or window.
 
+## Playback controls
 
-1. **`src/raymedia.h`** and **`src/rmedia.c`**
+```csharp
+video.Pause();
+video.Play();
+video.Stop();
+video.PositionSeconds = 30.0;
+video.Looping = true;
+Raylib.SetAudioStreamVolume(video.AudioStream, 0.5f);
+```
 
-   - You can include them directly in your project or compile **`rmedia.c`** and use the compiled library.
+Use load flags to change initial behavior:
 
-2. **[raylib](https://www.raylib.com/)**
+```csharp
+using MediaStream silentVideo = MediaStream.Load("intro.mp4", MediaLoadFlags.NoAudio);
+using MediaStream pausedVideo = MediaStream.Load("intro.mp4", MediaLoadFlags.NoAutoplay);
+using MediaStream audioOnly = MediaStream.Load("music.mp3", MediaLoadFlags.NoVideo);
+```
 
-   - Since **raylib-media** is an extension of **raylib**, it's assumed you are already using it and know how to compile it. This can easily be done using CMake or one of the available project files.
+## Loading from a managed stream
 
-3. The following subset of **libav\*** libraries from **[FFmpeg](https://www.ffmpeg.org/)**:
+Media can be read from a `System.IO.Stream`, including data stored in an archive or another custom
+asset source:
 
-   - **`libavcodec`**
-   - **`libavformat`**
-   - **`libavutil`**
-   - **`libswresample`**
-   - **`libswscale`**
+```csharp
+using FileStream file = File.OpenRead("packed-video.mp4");
+using MediaStream video = MediaStream.Load(file, leaveOpen: true);
+```
 
-   You may want to start by using precompiled libraries and later compile your own version, if needed:
+Seekable managed streams support media seeking. Non-seekable streams can be used with formats that
+FFmpeg can decode sequentially.
 
-   - **Linux**: Install via your package manager (e.g., `sudo apt install libavcodec-dev libavformat-dev libavutil-dev libswresample-dev libswscale-dev`).
-     
-   - **macOS**:
-     Use Homebrew (`brew install ffmpeg`).
-     
-   - **Windows**:
-     Download compiled libraries from sources like [FFmpeg Builds by BtbN](https://github.com/BtbN/FFmpeg-Builds): [`ffmpeg-n7.1-latest-win64-lgpl-shared-7.1.zip`](https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win64-lgpl-shared-7.1.zip)
+## Repository layout
 
+- `csharp/RaylibMedia` — managed library and NuGet package project.
+- `csharp/Example` — runnable C# example.
+- `csharp/RaylibMedia.Tests` — native ABI smoke tests.
+- `csharp/README.md` — source-build and integration documentation.
+- `csharp/NUGET.md` — package validation and publishing checklist.
+- `src` — native raylib-media decoder source used to build `raymedia.dll`.
+- `CMakeLists.txt` and `CMakeModules` — maintainer-only native build configuration.
 
+## Building the native runtime
 
----
+Package consumers can skip this section. Maintainers rebuilding `raymedia.dll` need CMake, shared
+Raylib 6 development files, and FFmpeg 7.1 development files:
 
-## About FFmpeg
+```powershell
+.\csharp\build-native.ps1 `
+  -RaylibIncludeDirectory 'D:\path\to\raylib-6.0\src' `
+  -RaylibLibrary 'D:\path\to\raylib-6.0\build-shared\raylib\Release\raylib.lib' `
+  -FfmpegIncludeDirectory 'D:\path\to\ffmpeg-7.1-shared\include' `
+  -FfmpegLibraryDirectory 'D:\path\to\ffmpeg-7.1-shared\lib'
+```
 
-FFmpeg is available in two versions:
+The script refreshes the native runtime stored in the NuGet project. It does not add FFmpeg DLLs to
+the package.
 
-- The complete version under a **GPL** license.
-- A more permissive version without certain proprietary codecs under an **LGPL** license.
+## Documentation
 
-**What does this mean for you?**
+- [C# integration and source-build guide](csharp/README.md)
+- [NuGet release checklist](csharp/NUGET.md)
+- [Package README](csharp/RaylibMedia/README.md)
 
-- **LGPL Version**: If you prefer more flexibility in licensing your own code, choose the LGPL version. By linking LGPL **libav\*** libraries dynamically, you're free to license your code as you wish without additional obligations.
-- **GPL Version**: Using the GPL version requires that your code also be released under the GPL license, which mandates that the source code be made available under the same terms.
+## License and attribution
 
+The C# wrapper and NuGet integration are distributed under the Zlib license. The native decoder is
+based on [raylib-media](https://github.com/cloudofoz/raylib-media), copyright © 2024 Claudio Z., and
+is also distributed under the Zlib license.
 
----
-
-## License
-
-This project is licensed under the **Zlib** License - see the [LICENSE](LICENSE.md) file for details.
-
----
-
-## What's New
-
-- **v0.3beta** (latest)
-  - **Added CMake support** for cross-platform builds
- 
----
-  
-## Credits
-
-Special thanks to the following resources:
-
-- [FFmpeg Libav Tutorial](https://github.com/leandromoreira/ffmpeg-libav-tutorial) - This resource was invaluable in helping me start to dive into FFmpeg and Libav.
-- [FFmpeg Builds by BtbN](https://github.com/BtbN/FFmpeg-Builds) - For providing compiled dependencies that are easy and straightforward to use, perfect for immediately starting to use **raylib-media** in a "portable" way.
-- [Blender Open Movie projects](https://studio.blender.org/films/) - These movies are not just very cool, but they have been a precious resource for testing my code.
-- [@GuvaCode](https://github.com/guvacode/) for his contribution with CMake support!
+See [LICENSE.md](LICENSE.md) and
+[THIRD-PARTY-NOTICES.md](csharp/RaylibMedia/THIRD-PARTY-NOTICES.md). FFmpeg is not included and has
+separate build-dependent licensing terms.

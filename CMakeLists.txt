@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.15)
 project("raymedia")
 
 # This section configures MSVC (Visual Studio) to enable "Edit and Continue" debugging
@@ -7,18 +7,11 @@ if(POLICY CMP0141)
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-# Determine the project's root directory and check if it's the main project
+# Determine the project's root directory
 set(RMEDIA_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(RMEDIA_IS_MAIN ON)
-else()
-    set(RMEDIA_IS_MAIN OFF)
-endif()
 
 # Project configuration options
 option(RMEDIA_BUILD_SHARED "Build raymedia as a shared library" OFF)
-option(RMEDIA_BUILD_EXAMPLES "Build the examples" ${RMEDIA_IS_MAIN})
 
 # Add the CMake module path for custom FindFFMPEG.cmake and FindRaylib.cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
@@ -70,11 +63,6 @@ endif()
 # Ensure the C standard is set for MSVC if using CMake version greater than 3.12
 if(CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET raymedia PROPERTY C_STANDARD 99)
-endif()
-
-# Example configuration
-if(RMEDIA_BUILD_EXAMPLES)
-    add_subdirectory("${RMEDIA_ROOT_PATH}/examples/media")
 endif()
 
 include(GNUInstallDirs)
