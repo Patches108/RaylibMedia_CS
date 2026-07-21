@@ -16,6 +16,7 @@ It enables easy integration of multimedia content into raylib applications, prov
 
 - [Core Features](#core-features)
 - [Minimal Usage](#minimal-usage)
+- [C# / Raylib-cs](#c--raylib-cs)
 - [Code Examples](#code-examples)
 - [Dependencies](#dependencies)
 - [About FFmpeg](#about-ffmpeg)
@@ -53,6 +54,24 @@ while (...) { // Begin your main loop
 
 UnloadMedia(&media); // Unload media when done
 ```
+---
+
+## C# / Raylib-cs
+
+An idiomatic .NET 8 wrapper is available in [`csharp/RaylibMedia`](csharp/RaylibMedia). It exposes
+Raylib-cs `Texture2D` and `AudioStream` values, playback controls, seeking, looping, global
+configuration, deterministic disposal, and direct loading from `System.IO.Stream`.
+
+The preview NuGet package targets Windows x64 and includes the native `raymedia.dll`:
+
+```powershell
+dotnet add package RaylibMedia --prerelease
+```
+
+FFmpeg itself is not redistributed in the package. See the [C# setup and integration
+guide](csharp/README.md) for the five required FFmpeg 7 runtime DLLs, native build instructions,
+and a complete Raylib-cs game loop. A runnable C# example and native-ABI smoke tests are included.
+
 ---
 
 ## Code Examples

@@ -1,0 +1,34 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaylibMedia", "csharp\RaylibMedia\RaylibMedia.csproj", "{2B025D24-D23C-4A75-B3C0-77844313B53F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "csharp\Example\Example.csproj", "{5E8198C5-CBCB-47DF-AC08-C2872B83A2E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaylibMedia.Tests", "csharp\RaylibMedia.Tests\RaylibMedia.Tests.csproj", "{FD11513B-375D-4784-8FD5-E4E4288D03ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B025D24-D23C-4A75-B3C0-77844313B53F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B025D24-D23C-4A75-B3C0-77844313B53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B025D24-D23C-4A75-B3C0-77844313B53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B025D24-D23C-4A75-B3C0-77844313B53F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E8198C5-CBCB-47DF-AC08-C2872B83A2E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E8198C5-CBCB-47DF-AC08-C2872B83A2E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E8198C5-CBCB-47DF-AC08-C2872B83A2E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E8198C5-CBCB-47DF-AC08-C2872B83A2E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD11513B-375D-4784-8FD5-E4E4288D03ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD11513B-375D-4784-8FD5-E4E4288D03ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD11513B-375D-4784-8FD5-E4E4288D03ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD11513B-375D-4784-8FD5-E4E4288D03ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

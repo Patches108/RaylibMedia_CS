@@ -27,6 +27,7 @@ else()
   # Locate FFmpeg root include directory (contains libavcodec/, libavformat/, etc.)
   find_path(FFMPEG_INCLUDE_DIR
     NAMES libavcodec/avcodec.h  # Checking for a key FFmpeg header
+    HINTS ${FFMPEG_INCLUDE_DIR} $ENV{FFMPEG_INCLUDE_DIR}
     PATHS /usr/include /usr/local/include /opt/local/include /sw/include
     PATH_SUFFIXES ffmpeg libav
   )
@@ -35,11 +36,12 @@ else()
   set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIR})
 
   # Locate FFmpeg libraries
-  find_library(FFMPEG_LIBAVCODEC NAMES avcodec PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
-  find_library(FFMPEG_LIBAVFORMAT NAMES avformat PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
-  find_library(FFMPEG_LIBAVUTIL NAMES avutil PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
-  find_library(FFMPEG_SWSCALE NAMES swscale PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
-  find_library(FFMPEG_SWRESAMPLE NAMES swresample PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
+  set(_FFMPEG_LIBRARY_HINTS ${FFMPEG_LIBRARY_DIR} $ENV{FFMPEG_LIBRARY_DIR})
+  find_library(FFMPEG_LIBAVCODEC NAMES avcodec HINTS ${_FFMPEG_LIBRARY_HINTS} PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
+  find_library(FFMPEG_LIBAVFORMAT NAMES avformat HINTS ${_FFMPEG_LIBRARY_HINTS} PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
+  find_library(FFMPEG_LIBAVUTIL NAMES avutil HINTS ${_FFMPEG_LIBRARY_HINTS} PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
+  find_library(FFMPEG_SWSCALE NAMES swscale HINTS ${_FFMPEG_LIBRARY_HINTS} PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
+  find_library(FFMPEG_SWRESAMPLE NAMES swresample HINTS ${_FFMPEG_LIBRARY_HINTS} PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
 
   # Combine all libraries
   set(FFMPEG_LIBRARIES
@@ -50,7 +52,7 @@ else()
       ${FFMPEG_SWRESAMPLE}
   )
 
-  if (FFMPEG_LIBAVCODEC AND FFMPEG_LIBAVFORMAT AND FFMPEG_LIBAVUTIL)
+  if (FFMPEG_LIBAVCODEC AND FFMPEG_LIBAVFORMAT AND FFMPEG_LIBAVUTIL AND FFMPEG_SWSCALE AND FFMPEG_SWRESAMPLE)
     set(FFMPEG_FOUND TRUE)
   endif()
 
