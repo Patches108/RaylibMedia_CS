@@ -126,7 +126,7 @@ FFmpeg can decode sequentially.
 - `csharp/Example` — runnable C# example.
 - `csharp/RaylibMedia.Tests` — native ABI smoke tests.
 - `csharp/README.md` — source-build and integration documentation.
-- `csharp/NUGET.md` — package validation and publishing checklist.
+- `csharp/NUGET.md` — local tester workflow and owner-only release guide.
 - `src` — native raylib-media decoder source used to build `raymedia.dll`.
 - `CMakeLists.txt` and `CMakeModules` — maintainer-only native build configuration.
 
@@ -149,7 +149,7 @@ the package.
 ## Documentation
 
 - [C# integration and source-build guide](csharp/README.md)
-- [NuGet release checklist](csharp/NUGET.md)
+- [NuGet testing and owner release guide](csharp/NUGET.md)
 - [Package README](csharp/RaylibMedia/README.md)
 
 ## License and attribution
