@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RaylibMedia\RaylibMedia.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <NativeStubBuildDirectory>$(MSBuildProjectDirectory)\obj\native-stub</NativeStubBuildDirectory>
+  </PropertyGroup>
+
+  <Target Name="BuildNativeInteropStub" BeforeTargets="Build" Condition="'$(OS)' == 'Windows_NT'">
+    <Exec Command="cmake -S &quot;$(MSBuildProjectDirectory)\native&quot; -B &quot;$(NativeStubBuildDirectory)&quot; -A x64" />
+    <Exec Command="cmake --build &quot;$(NativeStubBuildDirectory)&quot; --config $(Configuration)" />
+    <Copy SourceFiles="$(NativeStubBuildDirectory)\$(Configuration)\raymedia.dll"
+          DestinationFolder="$(TargetDir)" />
+  </Target>
+
+</Project>

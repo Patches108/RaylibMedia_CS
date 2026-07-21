@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+
+    <PackageId>RaylibMedia</PackageId>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>beta.1</VersionSuffix>
+    <Title>RaylibMedia for Raylib-cs</Title>
+    <Authors>DarkSoft; Claudio Z.</Authors>
+    <Company>DarkSoft</Company>
+    <Product>RaylibMedia</Product>
+    <Copyright>Copyright © 2024 Claudio Z.; C# conversion © 2026 DarkSoft</Copyright>
+    <Description>C# bindings for raylib-media, providing FFmpeg-backed video and audio playback in Raylib-cs games. This preview includes the Windows x64 raymedia runtime and requires FFmpeg 7 shared libraries.</Description>
+    <PackageTags>raylib;raylib-cs;ffmpeg;video;audio;media;gamedev;csharp</PackageTags>
+    <PackageLicenseExpression>Zlib</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>package-icon.png</PackageIcon>
+    <PackageReleaseNotes>Initial C# preview with path, URL, and managed Stream input; playback controls; seeking; looping; configuration; and a Windows x64 native runtime.</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Patches108/RaylibMedia_CS</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Patches108/RaylibMedia_CS</PackageProjectUrl>
+
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageOutputPath>..\artifacts</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Raylib-cs" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="package-icon.png" Pack="true" PackagePath="\" />
+    <None Include="THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="\" />
+    <None Include="runtimes\win-x64\native\raymedia.dll"
+          Pack="true"
+          PackagePath="runtimes/win-x64/native/" />
+  </ItemGroup>
+
+</Project>
