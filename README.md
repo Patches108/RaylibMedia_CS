@@ -54,6 +54,57 @@ To develop against this source checkout before publication, add a project refere
 </ItemGroup>
 ```
 
+## Add the required FFmpeg DLLs in Visual Studio
+
+RaylibMedia requires the FFmpeg 7.1 **shared** libraries. An `ffmpeg.exe` file by itself is not
+enough, and FFmpeg 8 or a current `master` build has different DLL version numbers.
+
+1. Download
+   [`ffmpeg-n7.1-latest-win64-lgpl-shared-7.1.zip`](https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win64-lgpl-shared-7.1.zip)
+   from the [BtbN FFmpeg Builds releases](https://github.com/BtbN/FFmpeg-Builds/releases).
+2. Extract the ZIP and open its `bin` folder.
+3. In File Explorer, create a folder named `ffmpeg` inside the folder containing your game's
+   `.csproj` file.
+4. Copy these five files from the extracted `bin` folder into the new `ffmpeg` folder:
+   - `avcodec-61.dll`
+   - `avformat-61.dll`
+   - `avutil-59.dll`
+   - `swresample-5.dll`
+   - `swscale-8.dll`
+5. In Visual Studio, right-click the **game project** in Solution Explorer and select
+   **Edit Project File**.
+6. Make sure the project targets 64-bit Windows by adding these settings to its existing
+   `<PropertyGroup>` if they are not already present:
+
+   ```xml
+   <PlatformTarget>x64</PlatformTarget>
+   <Prefer32Bit>false</Prefer32Bit>
+   <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+   ```
+
+7. Add this item group before the closing `</Project>` tag. It copies the DLLs to the root of the
+   build and publish folders, beside the game executable and `raymedia.dll`:
+
+   ```xml
+   <ItemGroup>
+     <None Update="ffmpeg\*.dll">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+       <TargetPath>%(Filename)%(Extension)</TargetPath>
+     </None>
+   </ItemGroup>
+   ```
+
+8. Save the project file, then select **Build > Rebuild Solution**.
+9. Open the build output folder, normally
+   `bin\Debug\<target-framework>\win-x64\`, and confirm that all five FFmpeg DLLs are in the same
+   folder as the game `.exe` and `raymedia.dll`.
+
+Keep the DLLs in the project folder and let MSBuild copy them. Files copied manually into `bin`
+can disappear after **Clean** or **Rebuild**. All five DLLs must come from the same FFmpeg build.
+When distributing a game, review and comply with the licensing files included in the downloaded
+FFmpeg build.
+
 ## Minimal C# example
 
 ```csharp
