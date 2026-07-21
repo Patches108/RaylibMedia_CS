@@ -9,13 +9,13 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
 
-    <PackageId>RaylibMedia</PackageId>
+    <PackageId>RaylibMedia.CS</PackageId>
     <VersionPrefix>0.1.0</VersionPrefix>
     <VersionSuffix>beta.1</VersionSuffix>
-    <Title>RaylibMedia for Raylib-cs</Title>
+    <Title>RaylibMedia.CS for Raylib-cs</Title>
     <Authors>DarkSoft; Claudio Z.</Authors>
     <Company>DarkSoft</Company>
-    <Product>RaylibMedia</Product>
+    <Product>RaylibMedia.CS</Product>
     <Copyright>Copyright © 2024 Claudio Z.; C# conversion © 2026 DarkSoft</Copyright>
     <Description>C# bindings for raylib-media, providing FFmpeg-backed video and audio playback in Raylib-cs games. This preview includes the Windows x64 raymedia runtime and requires FFmpeg 7 shared libraries.</Description>
     <PackageTags>raylib;raylib-cs;ffmpeg;video;audio;media;gamedev;csharp</PackageTags>
@@ -50,7 +50,10 @@
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="\" />
     <None Include="runtimes\win-x64\native\raymedia.dll"
           Pack="true"
-          PackagePath="runtimes/win-x64/native/" />
+          PackagePath="runtimes/win-x64/native/"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest"
+          TargetPath="raymedia.dll" />
   </ItemGroup>
 
 </Project>

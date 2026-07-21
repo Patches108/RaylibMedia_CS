@@ -45,8 +45,8 @@ finally {
     Pop-Location
 }
 
-$package = Join-Path $output "RaylibMedia.$Version.nupkg"
-$symbols = Join-Path $output "RaylibMedia.$Version.snupkg"
+$package = Join-Path $output "RaylibMedia.CS.$Version.nupkg"
+$symbols = Join-Path $output "RaylibMedia.CS.$Version.snupkg"
 
 & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package
 if ($LASTEXITCODE -ne 0) {

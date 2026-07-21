@@ -48,7 +48,7 @@ try {
     }
 
     $metadata = $nuspec.package.metadata
-    if ($metadata.id -ne 'RaylibMedia') {
+    if ($metadata.id -ne 'RaylibMedia.CS') {
         throw "Unexpected package ID '$($metadata.id)'."
     }
 

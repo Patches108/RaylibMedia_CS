@@ -38,21 +38,111 @@ FFmpeg changes.
 The FFmpeg DLLs must come from the same build. `ffmpeg.exe` is a command-line application and does
 not replace these shared libraries. FFmpeg binaries are not redistributed by this project.
 
-## Installation
+## Installation with NuGet
 
 After the first NuGet release is published:
 
 ```powershell
-dotnet add package RaylibMedia --prerelease
+dotnet add package RaylibMedia.CS --prerelease
 ```
 
-To develop against this source checkout before publication, add a project reference:
+## Use the GitHub source without NuGet
+
+These steps use the prebuilt Windows x64 `raymedia.dll` stored in this repository. You do not need
+to install CMake, compile C, or build FFmpeg.
+
+### 1. Clone the repository
+
+In Visual Studio, select **Clone a repository**, enter
+`https://github.com/Patches108/RaylibMedia_CS`, and choose a permanent folder outside your game's
+`bin` and `obj` folders.
+
+Alternatively, run:
+
+```powershell
+git clone https://github.com/Patches108/RaylibMedia_CS.git
+```
+
+### 2. Add RaylibMedia to your game solution
+
+1. Open your existing game solution in Visual Studio.
+2. In Solution Explorer, right-click the **solution**, then select **Add > Existing Project**.
+3. Browse to the cloned repository and select
+   `csharp\RaylibMedia\RaylibMedia.csproj`.
+4. Right-click your **game project**, then select **Add > Project Reference**.
+5. Under **Projects > Solution**, check **RaylibMedia**, then select **OK**.
+
+Visual Studio adds a project reference similar to this to the game's `.csproj` file:
 
 ```xml
 <ItemGroup>
-  <ProjectReference Include="path\to\RaylibMedia_CS\csharp\RaylibMedia\RaylibMedia.csproj" />
+  <ProjectReference Include="..\path\to\RaylibMedia_CS\csharp\RaylibMedia\RaylibMedia.csproj" />
 </ItemGroup>
 ```
+
+Do not add a `RaylibMedia.CS` package reference when using the source project. The source project
+already references Raylib-cs 8.0.0 and automatically copies the bundled `raymedia.dll` into the
+game's output folder.
+
+### 3. Set the game to Windows x64
+
+Right-click the game project, select **Edit Project File**, and make sure its main
+`<PropertyGroup>` contains these settings:
+
+```xml
+<TargetFramework>net8.0-windows</TargetFramework>
+<PlatformTarget>x64</PlatformTarget>
+<Prefer32Bit>false</Prefer32Bit>
+<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+```
+
+Newer target frameworks such as `net9.0-windows` are also supported. Save the project file and
+allow Visual Studio to reload it if prompted.
+
+### 4. Add FFmpeg
+
+Complete the **Add the required FFmpeg DLLs in Visual Studio** section below. The five DLLs are
+required whether RaylibMedia comes from NuGet or a project reference.
+
+### 5. Add a media file
+
+1. Create a `Media` folder inside the game project.
+2. Copy a video such as `intro.mp4` into it.
+3. In Solution Explorer, select the video and set **Copy to Output Directory** to
+   **Copy if newer** in the Properties window.
+
+The media path used by the game will then be `Media\intro.mp4`.
+
+### 6. Add the playback code
+
+Use the **Minimal C# example** below in the game's `Program.cs`, changing `intro.mp4` to
+`Media/intro.mp4`. The important order is:
+
+1. Initialize the Raylib window and audio device.
+2. Load the `MediaStream`.
+3. Call `Update()` once per game frame.
+4. Draw `VideoTexture` between `BeginDrawing()` and `EndDrawing()`.
+5. Dispose the media before closing the audio device and window.
+
+### 7. Build and verify
+
+Select **Build > Rebuild Solution**. In the game's output folder, normally
+`bin\Debug\<target-framework>\win-x64\`, confirm that these files exist:
+
+- `RaylibMedia.dll`
+- `raymedia.dll`
+- `raylib.dll`
+- `avcodec-61.dll`
+- `avformat-61.dll`
+- `avutil-59.dll`
+- `swresample-5.dll`
+- `swscale-8.dll`
+
+Run the game. If Windows reports a missing native library, first check that all eight files above
+are together in the executable folder and that the game is running as x64.
+
+To receive later source updates, run `git pull` inside the cloned `RaylibMedia_CS` repository and
+rebuild the game solution.
 
 ## Add the required FFmpeg DLLs in Visual Studio
 

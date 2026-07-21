@@ -21,7 +21,7 @@ queueing, seeking, resampling, and audio/video synchronization with a second imp
 Once the preview is published:
 
 ```powershell
-dotnet add package RaylibMedia --prerelease
+dotnet add package RaylibMedia.CS --prerelease
 ```
 
 The package supplies the managed wrapper, `raymedia.dll`, and Raylib-cs. Put the five FFmpeg DLLs
@@ -40,9 +40,12 @@ Add the managed project reference:
 </ItemGroup>
 ```
 
-The source build also needs a shared `raymedia` library built from this repository and FFmpeg 7.1
-development headers/import libraries for `avcodec`, `avformat`, `avutil`, `swresample`, and
-`swscale`.
+On Windows x64, the checked-in `runtimes/win-x64/native/raymedia.dll` is copied automatically by
+the project reference. Add the five FFmpeg runtime DLLs beside the game executable. Rebuilding the
+native decoder is necessary only when changing the C code or targeting another platform.
+
+A native rebuild needs FFmpeg 7.1 development headers/import libraries for `avcodec`, `avformat`,
+`avutil`, `swresample`, and `swscale`.
 
 Build `raymedia` against the shared Raylib 6.0 library used by Raylib-cs. Do not statically link a
 second Raylib copy into `raymedia`: its separate global graphics/audio state would not be initialized

@@ -1,7 +1,7 @@
 # NuGet local testing and owner release guide
 
 > [!IMPORTANT]
-> Only the package owner or an explicitly authorized maintainer may upload `RaylibMedia` to
+> Only the package owner or an explicitly authorized maintainer may upload `RaylibMedia.CS` to
 > NuGet.org. Testers and contributors must stop after the **Local testing workflow**. They do not
 > need a NuGet.org account or API key and must never run `dotnet nuget push` for this package.
 
@@ -30,8 +30,8 @@ $Version = '0.1.0-beta.1'
 
 This produces local, ignored build artifacts:
 
-- `csharp\artifacts\RaylibMedia.<version>.nupkg`
-- `csharp\artifacts\RaylibMedia.<version>.snupkg`
+- `csharp\artifacts\RaylibMedia.CS.<version>.nupkg`
+- `csharp\artifacts\RaylibMedia.CS.<version>.snupkg`
 
 The validator checks the managed assembly, XML documentation, Windows x64 runtime, README, icon,
 license, notices, and Raylib-cs dependency. It also rejects accidental FFmpeg DLL inclusion.
@@ -45,13 +45,13 @@ $LocalFeed = (Resolve-Path '.\csharp\artifacts').Path
 $TestRoot = Join-Path $env:TEMP 'RaylibMediaPackageTest'
 
 dotnet new console -n RaylibMediaPackageTest -o $TestRoot -f net9.0
-dotnet add "$TestRoot\RaylibMediaPackageTest.csproj" package RaylibMedia `
+dotnet add "$TestRoot\RaylibMediaPackageTest.csproj" package RaylibMedia.CS `
   --version $Version `
   --source $LocalFeed
 dotnet build "$TestRoot\RaylibMediaPackageTest.csproj" -r win-x64
 ```
 
-This does not contact NuGet.org for `RaylibMedia`. Package dependencies may still be restored from
+This does not contact NuGet.org for `RaylibMedia.CS`. Package dependencies may still be restored from
 the tester's configured sources.
 
 For a playback test, add a media file and put the five required FFmpeg 7 DLLs beside the test
@@ -72,7 +72,7 @@ Testers should report:
 
 - Upload `.nupkg` or `.snupkg` files to NuGet.org or another public registry as an official release.
 - Create or request an API key for the owner's NuGet package.
-- Publish a modified build using the `RaylibMedia` package ID.
+- Publish a modified build using the `RaylibMedia.CS` package ID.
 - Commit generated packages, FFmpeg binaries, `bin`, `obj`, or `artifacts` directories.
 - Share locally built packages as though they were releases from DarkSoft/Patches108.
 
@@ -131,7 +131,7 @@ before submitting the `.nupkg`.
 For later command-line releases, use an owner-created, package-scoped API key:
 
 ```powershell
-dotnet nuget push ".\csharp\artifacts\RaylibMedia.$Version.nupkg" `
+dotnet nuget push ".\csharp\artifacts\RaylibMedia.CS.$Version.nupkg" `
   --api-key $env:NUGET_API_KEY `
   --source https://api.nuget.org/v3/index.json
 ```
