@@ -1,4 +1,4 @@
-# RaylibMedia
+# RaylibMedia.CS
 
 RaylibMedia brings FFmpeg-backed video and audio playback to C# games built with
 [Raylib-cs](https://www.nuget.org/packages/Raylib-cs). It wraps the native raylib-media decoder in
@@ -10,7 +10,7 @@ an idiomatic, disposable C# API and exposes normal Raylib-cs textures and audio 
 ## Install
 
 ```powershell
-dotnet add package RaylibMedia --prerelease
+dotnet add package RaylibMedia.CS --prerelease
 ```
 
 The package brings in Raylib-cs 8.0.0 and copies `raymedia.dll` for `win-x64`. You must also put
