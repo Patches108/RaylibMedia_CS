@@ -125,7 +125,7 @@ commit, version, dependencies, runtime files, license, icon, and notices are cor
 
 ### 4. Upload to NuGet.org — owner only
 
-For the first release, use NuGet.org's **Upload Package** page and inspect its validation preview
+For a manual release, use NuGet.org's **Upload Package** page and inspect its validation preview
 before submitting the `.nupkg`.
 
 For later command-line releases, use an owner-created, package-scoped API key:
@@ -139,5 +139,5 @@ dotnet nuget push ".\csharp\artifacts\RaylibMedia.CS.$Version.nupkg" `
 Never put an API key in this repository, a script, terminal screenshot, chat message, build log, or
 GitHub issue. Revoke it immediately if it is exposed.
 
-Until the package owner has claimed the package ID with the first NuGet.org release, do not ask
-public testers to upload anything or distribute the package as an official release.
+`RaylibMedia.CS` is published on NuGet.org under the DarkSoft account. Public testers should never
+upload builds using this package ID or distribute locally built packages as official releases.

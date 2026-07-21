@@ -40,10 +40,11 @@ not replace these shared libraries. FFmpeg binaries are not redistributed by thi
 
 ## Installation with NuGet
 
-After the first NuGet release is published:
+The Windows x64 beta is available as
+[`RaylibMedia.CS` 0.1.0-beta.1 on NuGet.org](https://www.nuget.org/packages/RaylibMedia.CS/0.1.0-beta.1):
 
 ```powershell
-dotnet add package RaylibMedia.CS --prerelease
+dotnet add package RaylibMedia.CS --version 0.1.0-beta.1
 ```
 
 ## Use the GitHub source without NuGet
@@ -289,6 +290,7 @@ the package.
 
 ## Documentation
 
+- [RaylibMedia.CS on NuGet.org](https://www.nuget.org/packages/RaylibMedia.CS)
 - [C# integration and source-build guide](csharp/README.md)
 - [NuGet testing and owner release guide](csharp/NUGET.md)
 - [Package README](csharp/RaylibMedia/README.md)

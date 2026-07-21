@@ -18,10 +18,11 @@ queueing, seeking, resampling, and audio/video synchronization with a second imp
 
 ## Install the NuGet package
 
-Once the preview is published:
+The current beta is available from
+[`RaylibMedia.CS` on NuGet.org](https://www.nuget.org/packages/RaylibMedia.CS/0.1.0-beta.1):
 
 ```powershell
-dotnet add package RaylibMedia.CS --prerelease
+dotnet add package RaylibMedia.CS --version 0.1.0-beta.1
 ```
 
 The package supplies the managed wrapper, `raymedia.dll`, and Raylib-cs. Put the five FFmpeg DLLs

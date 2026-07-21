@@ -9,8 +9,11 @@ an idiomatic, disposable C# API and exposes normal Raylib-cs textures and audio 
 
 ## Install
 
+Install the current beta from
+[`RaylibMedia.CS` on NuGet.org](https://www.nuget.org/packages/RaylibMedia.CS/0.1.0-beta.1):
+
 ```powershell
-dotnet add package RaylibMedia.CS --prerelease
+dotnet add package RaylibMedia.CS --version 0.1.0-beta.1
 ```
 
 The package brings in Raylib-cs 8.0.0 and copies `raymedia.dll` for `win-x64`. You must also put
