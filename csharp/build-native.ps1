@@ -44,7 +44,6 @@ $configureArguments = @(
     '-S', $repositoryRoot,
     '-B', $buildDirectory,
     '-DRMEDIA_BUILD_SHARED=ON',
-    '-DRMEDIA_BUILD_EXAMPLES=OFF',
     "-DRAYLIB_INCLUDE_DIR=$raylibIncludes",
     "-DRAYLIB_LIBRARY_RELEASE=$raylibImportLibrary",
     "-DFFMPEG_INCLUDE_DIR=$ffmpegIncludes",

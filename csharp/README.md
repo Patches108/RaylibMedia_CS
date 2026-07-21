@@ -64,7 +64,6 @@ On Linux or macOS, use CMake directly:
 ```sh
 cmake -S . -B build/csharp \
   -DRMEDIA_BUILD_SHARED=ON \
-  -DRMEDIA_BUILD_EXAMPLES=OFF \
   -DRAYLIB_INCLUDE_DIR=/path/to/raylib/include \
   -DRAYLIB_LIBRARY_RELEASE=/path/to/shared/raylib/library \
   -DFFMPEG_INCLUDE_DIR=/path/to/ffmpeg/include \
