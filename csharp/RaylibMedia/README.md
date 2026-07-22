@@ -28,18 +28,39 @@ these **FFmpeg 7** shared libraries beside your game executable:
 The `ffmpeg.exe` command-line program is not a replacement for these libraries. All five DLLs must
 come from the same 64-bit FFmpeg build. FFmpeg is not included in this NuGet package.
 
+## Add a media file
+
+Place the video at `Media\intro.mp4` in the game project and make MSBuild copy it with the game:
+
+```xml
+<ItemGroup>
+  <None Update="Media\intro.mp4">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
+```
+
+This creates `Media\intro.mp4` under the build and publish output directories. Loading relative to
+`AppContext.BaseDirectory` avoids differences between Visual Studio, command-line, and published
+working directories.
+
 ## Play a video
 
 ```csharp
+using System;
+using System.IO;
 using Raylib_cs;
 using RaylibMedia;
+
+string mediaPath = Path.Combine(AppContext.BaseDirectory, "Media", "intro.mp4");
 
 Raylib.InitWindow(960, 540, "RaylibMedia");
 Raylib.InitAudioDevice();
 
 try
 {
-    using MediaStream video = MediaStream.Load("intro.mp4", MediaLoadFlags.Loop);
+    using MediaStream video = MediaStream.Load(mediaPath, MediaLoadFlags.Loop);
 
     while (!Raylib.WindowShouldClose())
     {

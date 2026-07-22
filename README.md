@@ -109,15 +109,26 @@ required whether RaylibMedia comes from NuGet or a project reference.
 
 1. Create a `Media` folder inside the game project.
 2. Copy a video such as `intro.mp4` into it.
-3. In Solution Explorer, select the video and set **Copy to Output Directory** to
-   **Copy if newer** in the Properties window.
+3. Right-click the game project, select **Edit Project File**, and add this before the closing
+   `</Project>` tag:
 
-The media path used by the game will then be `Media\intro.mp4`.
+   ```xml
+   <ItemGroup>
+     <None Update="Media\intro.mp4">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+     </None>
+   </ItemGroup>
+   ```
+
+This preserves the `Media` folder in build and publish output. If the file is not copied, FFmpeg
+cannot open it even when the original exists in the project folder.
 
 ### 6. Add the playback code
 
-Use the **Minimal C# example** below in the game's `Program.cs`, changing `intro.mp4` to
-`Media/intro.mp4`. The important order is:
+Use the **Minimal C# example** below in the game's `Program.cs`. It builds the path from
+`AppContext.BaseDirectory`, so it does not depend on the process's current working directory. The
+important order is:
 
 1. Initialize the Raylib window and audio device.
 2. Load the `MediaStream`.
@@ -199,15 +210,19 @@ FFmpeg build.
 ## Minimal C# example
 
 ```csharp
+using System;
+using System.IO;
 using Raylib_cs;
 using RaylibMedia;
+
+string mediaPath = Path.Combine(AppContext.BaseDirectory, "Media", "intro.mp4");
 
 Raylib.InitWindow(960, 540, "RaylibMedia");
 Raylib.InitAudioDevice();
 
 try
 {
-    using MediaStream video = MediaStream.Load("intro.mp4", MediaLoadFlags.Loop);
+    using MediaStream video = MediaStream.Load(mediaPath, MediaLoadFlags.Loop);
 
     while (!Raylib.WindowShouldClose())
     {
