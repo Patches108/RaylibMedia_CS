@@ -31,6 +31,23 @@ listed above beside the game executable. They must all come from the same 64-bit
 
 If you use the wrapper through NuGet, skip the native build instructions below.
 
+## Add a media file
+
+Place the file at `Media\intro.mp4` in the game project and add this to the game's `.csproj`:
+
+```xml
+<ItemGroup>
+  <None Update="Media\intro.mp4">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+  </None>
+</ItemGroup>
+```
+
+The file will be copied to `Media\intro.mp4` under the build and publish output directories. Build
+an absolute path from `AppContext.BaseDirectory` when loading it; do not rely on the current working
+directory.
+
 ## Develop from this source checkout
 
 Add the managed project reference:
@@ -87,15 +104,19 @@ searched. The architecture must also match the game (`win-x64`, `win-x86`, and s
 ## Minimal game loop
 
 ```csharp
+using System;
+using System.IO;
 using Raylib_cs;
 using RaylibMedia;
+
+string mediaPath = Path.Combine(AppContext.BaseDirectory, "Media", "intro.mp4");
 
 Raylib.InitWindow(960, 540, "Video");
 Raylib.InitAudioDevice();
 
 try
 {
-    using MediaStream video = MediaStream.Load("intro.mp4", MediaLoadFlags.Loop);
+    using MediaStream video = MediaStream.Load(mediaPath, MediaLoadFlags.Loop);
 
     while (!Raylib.WindowShouldClose())
     {
